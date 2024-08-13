@@ -80,6 +80,46 @@
     <?php 
         wp_footer();
     ?>
+    <script>     
+    jQuery(document).ready(function($) {
 
+
+        // Code for updating the cart content in real time
+        var current_items_in_cart = <?php echo count(WC()->cart->get_cart()); ?>;
+        function update_number_on_count() {
+            $.ajax({
+                url: wc_add_to_cart_params.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'get_cart_count'
+                },
+                success: function(response) {
+                    current_items_in_cart = parseInt(response);
+                    $('.fa-shopping-cart').closest('.border').find('.badge').text(current_items_in_cart);
+                }
+            });
+        }
+        update_number_on_count();
+        $(document.body).on('added_to_cart removed_from_cart', function() {
+            update_number_on_count();
+        });
+
+        // Code for addition and substraction
+        window.totalClick = (click) => {
+            let quantity_count = $('#item_quantity').val();
+            quantity_count = parseInt(quantity_count) || 0;
+            quantity_count += click;
+            if(quantity_count <= 0){
+                $('#minus').attr('disabled',true);
+            }else{
+                $('#minus').attr('disabled',false);
+            }
+            $('#item_quantity').val(quantity_count);
+            console.log(quantity_count);   
+        }
+
+    });
+
+    </script>
 </body>
 </html>

@@ -85,15 +85,60 @@
                     <i class="fas fa-heart text-primary"></i>
                     <span class="badge">0</span>
                 </a>
-                <a href="<?php echo esc_url('http://localhost/Walmart/cart')?>" class="btn border">
-                    <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge"><?php echo WC()->cart->get_cart_contents_count() ?></span>
-                </a>
+                <button class="btn border" data-toggle="modal" data-target="#exampleModalCenter" >
+                    <i class="fas fa-shopping-cart text-primary" ></i>
+                    <span class="badge" style="color: #D19C97;"></span>
+                </button>
             </div>
         </div>
     </div>
     <!-- Topbar End -->
 
+
+    <!-- Popup Start -->
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="text-center modal-title" id="exampleModalLongTitle">Your Cart</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                    <?php
+                            global $woocommerce;
+                            $items = $woocommerce->cart->get_cart();
+                        ?>
+                        <table>
+                            <tr>
+                                <th class="text-center">Name</th>
+                                <th class="text-center">Price</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-center" colspan="2">Action</th>
+                            </tr>
+                            <?php foreach($items as $item => $values):
+                                    $_product =  wc_get_product( $values['data']->get_id()); ?>
+                                        <tr>
+                                            <td  class="text-center"> <?php echo $_product->get_title()?> </td>
+                                            <td  class="text-center"> <?php echo get_post_meta($values['product_id'] , '_price', true);?> </td>
+                                            <td style="display: flex; flex-direction: row;">&nbsp;<button id="plus" onclick="totalClick(1)"> + </button> <input style="width: 110px !important;" type="number" id="item_quantity" min="0" name="item_quantity" class="form-control" placeholder="quantity" aria-label="number" aria-describedby="basic-addon1"  value="<?php echo $values['quantity']?>"/><button id="minus" onclick="totalClick(-1)"> - </button>&nbsp;</td> 
+                                            <td> Update </td>
+                                            <td> Delete </td>
+                                        </tr>
+                            <?php endforeach ?>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!-- Popup End -->
 
     <!-- Navbar Start -->
     <div class="container-fluid mb-5">
