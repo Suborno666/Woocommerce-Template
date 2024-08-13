@@ -74,18 +74,11 @@ get_header();
     </div>
     <!-- Categories End -->
 
-
-
-
-
     <!-- Offer Start -->
     <div class="container-fluid offer pt-5">
         <div class="row px-xl-5">
             <?php 
             $fields = get_field('advertisement_field',$post_id);
-            // echo "<pre>";
-            // print_r($fields);
-            // echo "</pre>";
             if($fields):
                 
                 foreach($fields as $field):
@@ -121,10 +114,7 @@ get_header();
         <div class="row px-xl-5 pb-3">
             <?php 
             $items = get_field('trendy_product');
-            // echo '<pre>';
-            // print_r($items);
             foreach($items as $item):
-            // echo $item->ID;
                     $product_id = $item->ID;
                     $_product = wc_get_product( $product_id );
             ?>
@@ -143,14 +133,19 @@ get_header();
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
                         <a href="<?php echo the_permalink()?>" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                        <?php
+                        // $product_id = $product->get_id();
+                        $add_to_cart_url = esc_url( '?add-to-cart=' . $product_id );
+                        ?>
+                        <a href="<?php echo $add_to_cart_url; ?>" class="btn btn-sm text-dark p-0 add_to_cart_button ajax_add_to_cart" data-product_id="<?php echo $product_id; ?>" data-quantity="1" aria-label="<?php echo $_product->add_to_cart_description(); ?>" rel="nofollow">
+                            <i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart
+                        </a>
                     </div>
                 </div>
             </div>
             <?php
             endforeach;
             ?>
-
         </div>
     </div>
     <!-- Products End -->

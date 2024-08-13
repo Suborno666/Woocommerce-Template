@@ -122,5 +122,11 @@ function my_custom_wc_rating_html($html, $rating) {
     return my_custom_wc_get_rating_html($rating, 0);
 }
 
+add_action('wp_ajax_get_cart_count', 'get_cart_count');
+add_action('wp_ajax_nopriv_get_cart_count', 'get_cart_count');
 
+function get_cart_count() {
+    echo WC()->cart->get_cart_contents_count();
+    wp_die();
+}
 ?>
