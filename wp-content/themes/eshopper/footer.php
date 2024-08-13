@@ -105,11 +105,12 @@
         });
 
         // Code for addition and substraction
-        function totalClick(change, productId) {
+        window.totalClick = function(change, productId) {
             let input = $(`tr[data-product-id="${productId}"] .quantity-input`);
             let newQuantity = parseInt(input.val()) + change;
             if (newQuantity >= 0) {
                 input.val(newQuantity);
+                console.log(newQuantity);
             }
         }
         
