@@ -121,12 +121,16 @@
                             </tr>
                             <?php foreach($items as $item => $values):
                                     $_product =  wc_get_product( $values['data']->get_id()); ?>
-                                        <tr>
-                                            <td  class="text-center"> <?php echo $_product->get_title()?> </td>
-                                            <td  class="text-center"> <?php echo get_post_meta($values['product_id'] , '_price', true);?> </td>
-                                            <td style="display: flex; flex-direction: row;">&nbsp;<button id="plus" onclick="totalClick(1)"> + </button> <input style="width: 110px !important;" type="number" id="item_quantity" min="0" name="item_quantity" class="form-control" placeholder="quantity" aria-label="number" aria-describedby="basic-addon1"  value="<?php echo $values['quantity']?>"/><button id="minus" onclick="totalClick(-1)"> - </button>&nbsp;</td> 
-                                            <td> Update </td>
-                                            <td> Delete </td>
+                                        <tr data-product-id="<?php echo $values['product_id']; ?>">
+                                            <td class="text-center"><?php echo $_product->get_title(); ?></td>
+                                            <td class="text-center price"><?php echo get_post_meta($values['product_id'], '_price', true); ?></td>
+                                            <td style="display: flex; flex-direction: row;">
+                                                <button onclick="totalClick(1, <?php echo $values['product_id']; ?>)">+</button>
+                                                <input type="number" style="width: 100px;" class="quantity-input" value="<?php echo $values['quantity']; ?>" min="0" />
+                                                <button onclick="totalClick(-1, <?php echo $values['product_id']; ?>)">-</button>
+                                            </td>
+                                            <td>Update</td>
+                                            <td>Delete</td>
                                         </tr>
                             <?php endforeach ?>
                         </table>

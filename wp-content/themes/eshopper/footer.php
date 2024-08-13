@@ -105,18 +105,14 @@
         });
 
         // Code for addition and substraction
-        window.totalClick = (click) => {
-            let quantity_count = $('#item_quantity').val();
-            quantity_count = parseInt(quantity_count) || 0;
-            quantity_count += click;
-            if(quantity_count <= 0){
-                $('#minus').attr('disabled',true);
-            }else{
-                $('#minus').attr('disabled',false);
+        function totalClick(change, productId) {
+            let input = $(`tr[data-product-id="${productId}"] .quantity-input`);
+            let newQuantity = parseInt(input.val()) + change;
+            if (newQuantity >= 0) {
+                input.val(newQuantity);
             }
-            $('#item_quantity').val(quantity_count);
-            console.log(quantity_count);   
         }
+        
 
     });
 

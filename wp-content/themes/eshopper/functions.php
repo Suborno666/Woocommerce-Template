@@ -116,6 +116,7 @@ function my_custom_wc_get_rating_html($rating, $count) {
 
     return $rating_html;
 }
+
 add_filter('woocommerce_product_get_rating_html', 'my_custom_wc_rating_html', 10, 2);
 
 function my_custom_wc_rating_html($html, $rating) {
