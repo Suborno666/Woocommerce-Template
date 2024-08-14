@@ -133,6 +133,7 @@ get_header();
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
                         <a href="<?php echo the_permalink()?>" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                        
                         <?php
                         // $product_id = $product->get_id();
                         $add_to_cart_url = esc_url( '?add-to-cart=' . $product_id );

@@ -14,7 +14,6 @@ function eshopper_theme_support(){
     add_theme_support('post-thumbnails');
     add_theme_support('category-thumbnails');
     add_theme_support('woocommerce');
-
     add_theme_support('title-tag');
 
 }
@@ -128,6 +127,114 @@ add_action('wp_ajax_nopriv_get_cart_count', 'get_cart_count');
 
 function get_cart_count() {
     echo count(WC()->cart->get_cart());
+
+    $product = [];
+    $product_name = [];
+    $product_price = [];
+    $product_quantity = [];
+
+    
     wp_die();
 }
+
+
+//Update Cart Quantity
+add_action('wp_ajax_update_cart_item', 'update_cart_item_callback');
+add_action('wp_ajax_nopriv_update_cart_item', 'update_cart_item_callback');
+
+function update_cart_item_callback() {
+    $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
+    $quantity = isset($_POST['quantity']) ? $_POST['quantity'] : 0;
+
+    try {
+        $item_key = get_cart_item_key($product_id);
+
+        if (!$item_key) {
+            wp_send_json_error('Product not found in cart');
+            return;
+        }
+
+        WC()->cart->set_quantity($item_key, $quantity);
+
+        $updated_cart_item = WC()->cart->get_cart_item($item_key);
+        $product = wc_get_product($product_id);
+
+        $data = [
+            'productId' => $product_id,
+            'quantity' => $updated_cart_item['quantity'],
+            'price' => $product->get_price() * $updated_cart_item['quantity']
+        ];        
+
+        wp_send_json_success($data);
+    
+    } catch (Exception $e) {
+        wp_send_json_error('Error updating cart: ' . $e->getMessage());
+    }
+    
+    wp_die();
+}
+
+function get_cart_item_key($product_id) {
+    
+    $cart = WC()->cart->get_cart();
+    foreach ($cart as $cart_item_key => $cart_item) {
+        if ($cart_item['product_id'] == $product_id) {
+            return $cart_item_key;
+        }
+    }
+    return null;
+}
+
+
+// Delete Cart Quantity
+add_action('wp_ajax_delete_cart_item', 'delete_cart_item_callback');
+add_action('wp_ajax_nopriv_delete_cart_item', 'delete_cart_item_callback');
+
+function delete_cart_item_callback() {
+    $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+
+    try{
+        if ($product_id) {
+
+            $cart_key = get_cart_item_key($product_id);
+
+            WC()->cart->remove_cart_item($cart_key);
+    
+            wp_send_json_success("Product $product_id removed from cart");
+        
+        } else {
+            wp_send_json_error('Invalid product ID');
+        }
+    }catch(Exception $e){
+        wp_send_json_error('Exceptional error',$e->getMessage());
+    }
+
+}
+
+// Update Table
+add_action('wp_ajax_update_table', 'update_table_callback');
+add_action('wp_ajax_nopriv_update_table', 'update_table_callback');
+
+function update_table_callback() {
+    $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+    $product = wc_get_product($product_id);
+    
+    if (!$product) {
+        wp_send_json_error("Product not found");
+        return;
+    }
+
+    $name = $product->get_name();
+    $price = $product->get_price();
+    $cart_item = WC()->cart->get_cart_item($product_id);
+    $quantity = $cart_item ? $cart_item['quantity'] : 1;
+
+    wp_send_json_success([
+        'productId' => $product_id,
+        'name' => $name,
+        'price' => $price * $quantity,
+        'quantity' => $quantity
+    ]);
+}
+
 ?>

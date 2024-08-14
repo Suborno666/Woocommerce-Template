@@ -83,10 +83,10 @@
     <script>     
     jQuery(document).ready(function($) {
 
-
         // Code for updating the cart content in real time
         var current_items_in_cart = <?php echo count(WC()->cart->get_cart()); ?>;
-        function update_number_on_count() {
+        var product_id = $('.ID').val();
+        update_number_on_count = () => {
             $.ajax({
                 url: wc_add_to_cart_params.ajax_url,
                 type: 'POST',
@@ -96,25 +96,135 @@
                 success: function(response) {
                     current_items_in_cart = parseInt(response);
                     $('.fa-shopping-cart').closest('.border').find('.badge').text(current_items_in_cart);
+                    $('.table').trigger("reload");
+                }
+            }); 
+        }
+        // Here
+
+        $('.add_to_cart_button').on('click', function(e) {
+            e.preventDefault();
+            var id = $(this).data('product_id');
+            console.log('Clicked!');
+            console.log(`Product Id: ${id}`);
+            updateTable(id);
+        });
+
+            function updateTable(productId) {
+                $.ajax({
+                    url: wc_add_to_cart_params.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'update_table',
+                        product_id: productId
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            let data = response.data;
+                            let row = $(`tr[data-product-id="${data.productId}"]`);
+                            if (row.length) {
+
+                                row.find('.quantity-input').val(data.quantity);
+                                row.find('.price').text(data.price);
+                            } else {
+                                // Add new row
+                                let newRow = `
+                                    <tr data-product-id="${data.productId}">
+                                        <td class="ID">${data.productId}</td>
+                                        <td class="product_name">${data.name}</td>
+                                        <td class="price">${data.price}</td>
+                                        <td style="display: flex; flex-direction: row;">
+                                            <button onclick="totalClick(1, ${data.productId})">+</button>
+                                            <input type="number" style="width: 100px;" class="quantity-input" value="${data.quantity}" min="0" />
+                                            <button onclick="totalClick(-1, ${data.productId})">-</button>
+                                        </td>
+                                        <td><button onclick="deleteRow(${data.productId})">Delete</button></td>
+                                    </tr>
+                                `;
+                                $('table.table-striped').append(newRow);
+                            }
+                        } else {
+                            console.error("Error updating table:", response.data);
+                        }
+                    }
+                });
+            }
+
+        // Here
+
+        update_number_on_count();
+        console.log(product_id);
+
+        $(document.body).on('added_to_cart removed_from_cart', function() {
+            update_number_on_count();
+            console.log(product_id);
+        });
+
+        function updateTableRow(data) {
+            let row = $(`tr[data-product-id="${data.productId}"]`);
+            row.find('.quantity-input').val(data.quantity);
+            row.find('.price').text(data.price);
+        }
+        
+        // Code for addition and substraction
+        window.totalClick = function(change, productId) {
+            let row = $(`tr[data-product-id="${productId}"]`);
+            let input =  row.find(`.quantity-input`)
+            let newQuantity = parseInt(input.val()) + change;
+            if (newQuantity >= 1) {
+                input.val(newQuantity);
+                updateCart(productId, newQuantity);
+            }
+        }
+
+        updateCart=(product_id, quantity)=>{
+            $.ajax({
+                url: wc_add_to_cart_params.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'update_cart_item',
+                    product_id: product_id,
+                    quantity: quantity,
+                },
+                success: (response) => {
+                    if(response.success){
+                        updateTableRow(response.data)
+                    } else {
+                        console.error("Error:", response.data);
+                    }
+                },
+                error: (xhr, status, error) => {
+                    console.error("AJAX error:", status, error);
                 }
             });
         }
-        update_number_on_count();
-        $(document.body).on('added_to_cart removed_from_cart', function() {
-            update_number_on_count();
-        });
 
-        // Code for addition and substraction
-        window.totalClick = function(change, productId) {
-            let input = $(`tr[data-product-id="${productId}"] .quantity-input`);
-            let newQuantity = parseInt(input.val()) + change;
-            if (newQuantity >= 0) {
-                input.val(newQuantity);
-                console.log(newQuantity);
-            }
+
+        deleteRow = (productId) => {
+            $.ajax({
+                url: wc_add_to_cart_params.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'delete_cart_item',
+                    product_id: productId,
+                },
+                success: (response) => {
+                    if (response.success) {
+                        console.log(response.data);
+                        
+                        $(`tr[data-product-id="${productId}"]`).fadeOut(400,()=>{
+                            $(this).remove()
+                        })
+
+                    } else {
+                        console.error("Error:", response.data);
+                    }
+                },
+                error: (xhr, status, error) => {
+                    console.error("AJAX error:", status, error);
+                }
+            });
         }
-        
-
     });
 
     </script>

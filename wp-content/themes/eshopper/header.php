@@ -112,32 +112,39 @@
                             global $woocommerce;
                             $items = $woocommerce->cart->get_cart();
                         ?>
-                        <table>
+                        <table class="table table-striped">
                             <tr>
-                                <th class="text-center">Name</th>
-                                <th class="text-center">Price</th>
-                                <th class="text-center">Quantity</th>
-                                <th class="text-center" colspan="2">Action</th>
+                                <th >Product ID</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Action</th>
                             </tr>
-                            <?php foreach($items as $item => $values):
-                                    $_product =  wc_get_product( $values['data']->get_id()); ?>
-                                        <tr data-product-id="<?php echo $values['product_id']; ?>">
-                                            <td class="text-center"><?php echo $_product->get_title(); ?></td>
-                                            <td class="text-center price"><?php echo get_post_meta($values['product_id'], '_price', true); ?></td>
-                                            <td style="display: flex; flex-direction: row;">
-                                                <button onclick="totalClick(1, <?php echo $values['product_id']; ?>)">+</button>
-                                                <input type="number" style="width: 100px;" class="quantity-input" value="<?php echo $values['quantity']; ?>" min="0" />
-                                                <button onclick="totalClick(-1, <?php echo $values['product_id']; ?>)">-</button>
-                                            </td>
-                                            <td>Update</td>
-                                            <td>Delete</td>
-                                        </tr>
-                            <?php endforeach ?>
+                            <?php if(isset($items)):?>
+                                <?php foreach($items as $item => $values):
+                                        $_product =  wc_get_product( $values['data']->get_id()); ?>
+                                            <tr data-product-id="<?php echo $values['product_id']; ?>">
+                                                <td class="ID"><?php echo $values['product_id']; ?></td>
+                                                <td class="product_name"><?php echo $_product->get_title(); ?></td>
+                                                <td class="price">
+                                                    <?php 
+                                                    $price = get_post_meta($values['product_id'], '_price', true);
+                                                    $quantity =   $values['quantity'];
+                                                    echo $price * $quantity;
+                                                    ?><span class="load"></span></td>
+                                                <td style="display: flex; flex-direction: row;">
+                                                    <button onclick="totalClick(1, <?php echo $values['product_id']; ?>)">+</button>
+                                                    <input type="number" style="width: 100px;" class="quantity-input" value="<?php echo $values['quantity']; ?>" min="0" />
+                                                    <button onclick="totalClick(-1, <?php echo $values['product_id']; ?>)">-</button>
+                                                </td>
+                                                <td><button onclick="deleteRow(<?php echo $values['product_id']; ?>)">Delete</button></td>
+                                            </tr>
+                                <?php endforeach ?>
+                            <?php else:?>
+                                <td>Empty Field</td>
+                            <?php endif?>
+                            
                         </table>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
                     </div>
                 </div>
             </div>
@@ -146,11 +153,6 @@
 
     <!-- Navbar Start -->
     <div class="container-fluid mb-5">
-            <!-- <div class="row border-top px-xl-5">
-                <div class="col-lg-3 d-none d-lg-block">
-                   
-                </div>
-            </div> -->
             <div class="col-lg-9">
                 <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
                     <a href="" class="text-decoration-none d-block d-lg-none">
