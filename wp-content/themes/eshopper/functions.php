@@ -192,7 +192,7 @@ add_action('wp_ajax_nopriv_delete_cart_item', 'delete_cart_item_callback');
 
 function delete_cart_item_callback() {
     $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
-
+    
     try{
         if ($product_id) {
 
@@ -200,7 +200,8 @@ function delete_cart_item_callback() {
 
             WC()->cart->remove_cart_item($cart_key);
     
-            wp_send_json_success("Product $product_id removed from cart");
+            $quantity = count(WC()->cart->get_cart());
+            wp_send_json_success(["quantity"=> $quantity]);
         
         } else {
             wp_send_json_error('Invalid product ID');

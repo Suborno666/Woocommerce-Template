@@ -104,7 +104,8 @@
 
         $('.add_to_cart_button').on('click', function(e) {
             e.preventDefault();
-            var id = $(this).data('product_id');
+            var id = $(this).attr('data-product_id');
+            alert(`Product Id: ${id}`)
             console.log('Clicked!');
             console.log(`Product Id: ${id}`);
             updateTable(id);
@@ -123,11 +124,9 @@
                             let data = response.data;
                             let row = $(`tr[data-product-id="${data.productId}"]`);
                             if (row.length) {
-
                                 row.find('.quantity-input').val(data.quantity);
                                 row.find('.price').text(data.price);
                             } else {
-                                // Add new row
                                 let newRow = `
                                     <tr data-product-id="${data.productId}">
                                         <td class="ID">${data.productId}</td>
@@ -153,11 +152,11 @@
         // Here
 
         update_number_on_count();
-        console.log(product_id);
+        console.log("Product-ID:",product_id);
 
         $(document.body).on('added_to_cart removed_from_cart', function() {
             update_number_on_count();
-            console.log(product_id);
+            console.log("Product-ID:",product_id);
         });
 
         function updateTableRow(data) {
@@ -210,12 +209,14 @@
                 },
                 success: (response) => {
                     if (response.success) {
-                        console.log(response.data);
-                        
+                        console.log("Delete Response Data:",response.data);
+
                         $(`tr[data-product-id="${productId}"]`).fadeOut(400,()=>{
                             $(this).remove()
                         })
-
+                        current_items_in_cart = parseInt(response.data.quantity);
+                        console.log("Current Item:",current_items_in_cart);
+                        $('.fa-shopping-cart').closest('.border').find('.badge').text(current_items_in_cart);
                     } else {
                         console.error("Error:", response.data);
                     }
@@ -226,7 +227,6 @@
             });
         }
     });
-
     </script>
 </body>
 </html>
