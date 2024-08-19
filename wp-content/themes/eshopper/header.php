@@ -87,7 +87,7 @@
                 </a>
                 <button class="btn border" data-toggle="modal" data-target="#exampleModalCenter" >
                     <i class="fas fa-shopping-cart text-primary" ></i>
-                    <span class="badge" style="color: #D19C97;"> <?php echo count(WC()->cart->get_cart()); ?></span>
+                    <span class="badge" style="color: #D19C97;"><div id="mini-cart-count"><?php echo count(WC()->cart->get_cart()); ?></div></span>
                 </button>
             </div>
         </div>
@@ -137,7 +137,7 @@
                                                     <input type="number" style="width: 100px;" class="quantity-input" value="<?php echo $values['quantity']; ?>" min="0" />
                                                     <button onclick="totalClick(-1, <?php echo $values['product_id']; ?>)">-</button>
                                                 </td>
-                                                <td><button onclick="deleteRow(<?php echo $values['product_id']; ?>)">Delete</button></td>
+                                                <td><button class="delete" data-delete-id="<?php echo $values['product_id']; ?>"> Delete </button></td>
                                             </tr>
                                 <?php endforeach ?>
                             <?php else:?>
