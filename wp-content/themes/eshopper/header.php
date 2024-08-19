@@ -87,7 +87,7 @@
                 </a>
                 <button class="btn border" data-toggle="modal" data-target="#exampleModalCenter" >
                     <i class="fas fa-shopping-cart text-primary" ></i>
-                    <span class="badge" style="color: #D19C97;"></span>
+                    <span class="badge" style="color: #D19C97;"> <?php echo count(WC()->cart->get_cart()); ?></span>
                 </button>
             </div>
         </div>
